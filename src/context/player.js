@@ -5,15 +5,15 @@ const SESSION_NAME = "SESSION_NAME";
 const PlayerContext = createContext();
 
 function PlayerProvider({ children }) {
-	const [name, setName] = useState(sessionStorage.getItem(SESSION_NAME) || "");
+	const [name, setName] = useState(localStorage.getItem(SESSION_NAME) || "");
 	const [isRegistered, setIsRegistered] = useState(false);
 
 	useEffect(() => {
 		if (name) {
-			sessionStorage.setItem(SESSION_NAME, name);
+			localStorage.setItem(SESSION_NAME, name);
 			setIsRegistered(true);
 		} else {
-			sessionStorage.removeItem(SESSION_NAME);
+			localStorage.removeItem(SESSION_NAME);
 			setIsRegistered(false);
 		}
 	}, [name]);
