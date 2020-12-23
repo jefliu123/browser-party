@@ -3,6 +3,7 @@ import firebase from "firebase/app";
 import "firebase/firestore";
 import "firebase/database";
 import "firebase/auth";
+import { Redirect } from "react-router-dom";
 import { useParams } from "react-router-dom";
 
 const firebaseConfig = {
@@ -14,6 +15,8 @@ const firebaseConfig = {
 	appId: "1:477711712483:web:bf4c204e171208b9a445d6",
 	measurementId: "G-TBF684DB8P",
 };
+
+
 
 if (!firebase.apps.length) {
 	firebase.initializeApp(firebaseConfig);
@@ -30,8 +33,10 @@ function RoomPage({ gameId }) {
 	const [value, setValue] = useState("");
 	//boolean for whether player joined
 	const [joined, setJoined] = useState(true);
+	const [redirect, setRedirect] = useState(false);
 
 	const gameRef = firestore.collection("games").doc(`${gameId}`);
+
 
 	useEffect(() => {
 		function update(snapshot) {
@@ -52,6 +57,20 @@ function RoomPage({ gameId }) {
 		return () => unsubscribe();
 	}, [gameId, gameRef]);
 
+	function startGame() {
+		firebase
+		  .database()
+		  .ref(`games/${gameId}`)
+		  gameRef.update({
+			status: "ingame",
+		  });
+		  setRedirect("/game/" + `${gameId}`)
+	  }
+
+	  if (redirect) {
+		return <Redirect to={redirect} push />;
+	}
+	  
 	function joinRoom(e) {
 		e.preventDefault();
 
@@ -68,7 +87,7 @@ function RoomPage({ gameId }) {
 	return (
 		<div>
 			<h1>Room: {gameId}</h1>
-			{game && (
+			{game && game.status === "waiting" &&(
 				<div>
 					<p>
 						Share this link with your friends to invite them:{" "}
@@ -97,6 +116,15 @@ function RoomPage({ gameId }) {
 							</form>
 						)}
 					</div>
+					<div>
+						<button
+						 variant="contained"
+						 color="primary"
+						 onClick={startGame}
+						>
+							Start
+						</button>
+						</div>
 				</div>
 			)}
 		</div>
