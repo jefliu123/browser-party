@@ -50,7 +50,7 @@ function RoomPage({ gameId }) {
 
 		const unsubscribe = gameRef.onSnapshot("value", update);
 		return () => unsubscribe();
-	}, [gameId]);
+	}, [gameId, gameRef]);
 
 	function joinRoom(e) {
 		e.preventDefault();
