@@ -14,18 +14,20 @@ function App() {
 	return (
 		<div>
 			<Router>
-				<Switch>
-					<Route path="/" exact component={HomePage} />
-					<Route path="/lobby" render={() => <LobbyPage />} />
-					<Route
-						path="/room/:id"
-						render={({ match }) => <RoomPage gameId={match.params.id} />}
-					/>
-					<Route
-						path="/game/:id"
-						render={({ match }) => <GamePage gameId={match.params.id} />}
-					/>
-				</Switch>
+				<PlayerProvider>
+					<Switch>
+						<Route path="/" exact component={HomePage} />
+						<Route path="/lobby" render={() => <LobbyPage />} />
+						<Route
+							path="/room/:id"
+							render={({ match }) => <RoomPage gameId={match.params.id} />}
+						/>
+						<Route
+							path="/game/:id"
+							render={({ match }) => <GamePage gameId={match.params.id} />}
+						/>
+					</Switch>
+				</PlayerProvider>
 			</Router>
 		</div>
 	);
