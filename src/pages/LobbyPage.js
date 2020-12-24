@@ -29,10 +29,11 @@ function LobbyPage() {
   const [redirect, setRedirect] = useState(false);
   const [rooms, setRooms] = useState([]);
   //const gamesRef = firestore.collection("games");
-  let db = firebase.firestore();
+
   //real time listener
   useEffect(() => {
     setRooms([]);
+    let db = firebase.firestore();
     let unsubscribe = db
       .collection("games")
       .where("status", "==", "waiting")
@@ -49,6 +50,7 @@ function LobbyPage() {
   if (redirect) {
     return <Redirect to={redirect} push />;
   }
+  //join room button
 
   return (
     <div>
@@ -57,8 +59,19 @@ function LobbyPage() {
         New Room
       </button>
       <h2>Existing Rooms</h2>
-      <p>{rooms}</p>
-      <button onClick={() => setRedirect("/room/kangaroo")}>Join</button>
+      <div>
+        {/*Maps Doc ids to unique keys which are the doc ids.
+			  All Doc ids are unique
+			   												*/}
+        {rooms.map((room) => (
+          <div key={room.toString()}>
+            {room}
+            <button onClick={() => setRedirect("/room/" + room)}>
+              Join Room
+            </button>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
