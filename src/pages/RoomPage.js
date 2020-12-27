@@ -4,7 +4,6 @@ import "firebase/firestore";
 import "firebase/database";
 import "firebase/auth";
 import { Redirect } from "react-router-dom";
-import { useParams } from "react-router-dom";
 
 //context
 import { PlayerContext } from "../context/player";
@@ -32,11 +31,9 @@ function RoomPage({ gameId }) {
 		PlayerContext
 	);
 
-	//game data
 	const [game, setGame] = useState(null);
-	//text box value
+	const [players, setPlayers] = useState([]);
 	const [value, setValue] = useState("");
-
 	const [redirect, setRedirect] = useState(false);
 
 	const gameRef = firestore.collection("games").doc(`${gameId}`);
@@ -46,48 +43,64 @@ function RoomPage({ gameId }) {
 			if (snapshot.exists) {
 				//get state of game if it exists
 				setGame(snapshot.data());
+				setPlayers(Object.keys(snapshot.data().gameData.players));
 			} else {
 				//initialize state of game
-				gameRef.set({
-					state: "",
-					status: "waiting",
-					players: [],
-				});
+				firestore
+					.collection("games")
+					.doc(`${gameId}`)
+					.set({
+						type: "public",
+						status: "waiting",
+						playerOrder: [],
+						gameData: { players: {}, phase: "", turn: 0 },
+					});
 			}
 		}
 
-		const unsubscribe = gameRef.onSnapshot("value", update);
+		const unsubscribe = firestore
+			.collection("games")
+			.doc(`${gameId}`)
+			.onSnapshot("value", update);
+
 		return () => unsubscribe();
-	}, [gameId, gameRef]);
-
-	function startGame() {
-		firebase.database().ref(`games/${gameId}`);
-		gameRef.update({
-			status: "ingame",
-		});
-		setRedirect("/game/" + `${gameId}`);
-	}
-
-	if (redirect) {
-		return <Redirect to={redirect} push />;
-	}
+	}, [gameId]);
 
 	function joinRoom(e) {
 		e.preventDefault();
 
 		if (value) {
 			gameRef.update({
-				players: firebase.firestore.FieldValue.arrayUnion(value),
+				[`gameData.players.${value}`]: { coins: 0, stars: 0, boardPos: 0 },
 			});
-			//setJoined(false);
 			registerPlayer(value);
 		}
 	}
 
-	function unregister() {
-		unregisterPlayer();
+	function startGame() {
+		gameRef.update({
+			status: "ingame",
+			playerOrder: players,
+		});
+		setRedirect(`/game/${gameId}`);
+	}
 
-		//TODO: REMOVE PLAYER FROM THIS GAME
+	function unregister() {
+		gameRef.set(
+			{
+				gameData: {
+					players: {
+						[name]: firebase.firestore.FieldValue.delete(),
+					},
+				},
+			},
+			{ merge: true }
+		);
+		unregisterPlayer();
+	}
+
+	if (redirect) {
+		return <Redirect to={redirect} push />;
 	}
 
 	const link = "localhost:3010/room/" + gameId;
@@ -108,17 +121,18 @@ function RoomPage({ gameId }) {
 							Share this link with your friends to invite them:{" "}
 							<a href={link}>{link}</a>
 						</p>
+						<p>Room Type: {game.type}</p>
 						<p>Status: {game.status}</p>
 						<div>
-							{game.players.map((player, index) => (
-								<div>
+							{players.map((player, index) => (
+								<div key={index}>
 									{player !== name ? (
 										<p>
 											Player {index + 1}: {player}
 										</p>
 									) : (
 										<p>
-											Player {index + 1}: {player} THIS SHOULD BE YOU
+											Player {index + 1}: {player} (you)
 										</p>
 									)}
 								</div>
@@ -140,12 +154,19 @@ function RoomPage({ gameId }) {
 							)}
 						</div>
 						<div>
-							<button onClick={startGame}>Start</button>
+							{players.length > 0 && <button onClick={startGame}>Start</button>}
 						</div>
 					</div>
 				) : (
 					<div>
 						<p>Already in game...</p>
+						<button
+							onClick={() => {
+								setRedirect(`/game/${gameId}`);
+							}}
+						>
+							Go to Game
+						</button>
 					</div>
 				))}
 		</div>
