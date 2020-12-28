@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Redirect } from "react-router-dom";
 import generate from "project-name-generator";
-import db from "firebase";
+
 import firebase from "firebase/app";
 import "firebase/firestore";
 import "firebase/database";
@@ -26,23 +26,15 @@ if (!firebase.apps.length) {
 const firestore = firebase.firestore();
 
 function LobbyPage() {
-  const [redirect, setRedirect] = useState(false);
   const [rooms, setRooms] = useState([]);
-  //const gamesRef = firestore.collection("games");
+  const [redirect, setRedirect] = useState(false);
 
-  //real time listener
   useEffect(() => {
-    setRooms([]);
-    let db = firebase.firestore();
-    let unsubscribe = db
+    let unsubscribe = firestore
       .collection("games")
       .where("status", "==", "waiting")
       .onSnapshot((snapshot) => {
-        let changes = snapshot.docChanges();
-        changes.forEach((change) => {
-          //setRooms(change.doc.id);
-          setRooms((rooms) => [rooms, change.doc.id]);
-        });
+        setRooms(snapshot.docs.map((doc) => doc.id));
       });
     return () => unsubscribe();
   }, []);
@@ -50,7 +42,6 @@ function LobbyPage() {
   if (redirect) {
     return <Redirect to={redirect} push />;
   }
-  //join room button
 
   return (
     <div>
@@ -58,13 +49,10 @@ function LobbyPage() {
       <button onClick={() => setRedirect("/room/" + generate().dashed)}>
         New Room
       </button>
-      <h2>Existing Rooms</h2>
+      <h2>Public Rooms</h2>
       <div>
-        {/*Maps Doc ids to unique keys which are the doc ids.
-			  All Doc ids are unique
-			   												*/}
         {rooms.map((room) => (
-          <div key={room.toString()}>
+          <div key={room}>
             {room}
             <button onClick={() => setRedirect("/room/" + room)}>
               Join Room
