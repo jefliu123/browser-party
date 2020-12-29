@@ -1,0 +1,42 @@
+img {
+    width: 100%;
+    height: 100vh;
+    position: relative;
+    top: 0;
+    left: 0;
+    z-index: -5000;
+    filter: contrast(90%) brightness(.36);
+} 
+
+#background {
+    padding-left: 0;
+    padding-right: 0;
+}
+
+#button {
+    border: none;
+    background-color: #a6a9b6;
+    z-index: 99999;
+    position:absolute;
+    margin: -20px -50px; 
+    top:50%; 
+    left:50%;
+}
+
+
+.welcome {
+    font-size:350%;
+    z-index: 99999;
+    position:absolute;
+    top:40%; 
+    margin: -20px -228px; 
+    left:45%;
+    color: #c9cbff;
+}
+
+@media (max-width: 1200px) {
+    h1 {
+        display: none;
+        visibility: hidden;
+    }
+  }
