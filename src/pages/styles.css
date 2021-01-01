@@ -1,0 +1,117 @@
+.homePage {
+	height: 100vh;
+	width: 100vw;
+	background: url(../assets/background_1.png);
+	background-size: contain;
+	animation: scrollpage 600s linear infinite;
+	text-align: center;
+}
+
+@keyframes scrollpage {
+	0% {
+		background-position: 0 0px;
+	}
+	100% {
+		background-position: 40000px 0px;
+	}
+}
+
+.title {
+	cursor: default;
+	max-width: 600px;
+	margin: auto;
+	margin-bottom: 5vh;
+	font-size: 5em;
+	font-family: cursive;
+	color: #f6f1d1;
+	text-shadow: 8px 7px 7px black;
+}
+/* .title:hover {
+	animation-name: rotate360;
+	animation-duration: 0.2s;
+	animation-iteration-count: infinite;
+	animation-fill-mode: forwards;
+	animation-play-state: running;
+	animation-timing-function: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+}
+
+@keyframes rotate360 {
+	25% {
+		transform: rotate(90deg);
+	}
+	50% {
+		transform: rotate(180deg);
+	}
+	75% {
+		transform: rotate(270deg);
+	}
+	100% {
+		transform: rotate(360deg);
+	}
+} */
+
+.getStartedButton {
+	cursor: pointer;
+	outline: none;
+	padding: 1em 2em;
+	border: 2px solid rgb(106, 163, 137);
+	border-radius: 1em;
+	background: rgb(205, 255, 232);
+	transform-style: preserve-3d;
+	transition: all 175ms cubic-bezier(0, 0, 1, 1);
+	font-size: 1.5rem;
+	font-family: cursive;
+	font-weight: 700;
+	color: rgb(106, 163, 137);
+}
+.getStartedButton::before {
+	position: absolute;
+	content: "";
+	width: 100%;
+	height: 100%;
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background: rgb(121, 186, 156);
+	border-radius: inherit;
+	box-shadow: 0 0 0 2px rgb(121, 186, 156);
+	transform: translate3d(0, 0.75em, -1em);
+	transition: all 175ms cubic-bezier(0, 0, 1, 1);
+}
+
+.getStartedButton:hover {
+	transform: translate(0em, 0.75em);
+}
+
+.getStartedButton:hover::before {
+	transform: translate3d(0, 0, -1em);
+
+	box-shadow: 0 0 0 2px rgb(121, 186, 156), 0 0.25em 0 0 rgb(121, 186, 156);
+}
+
+.gamePage {
+	height: 100vh;
+	width: 100vw;
+	background-color: #007ced;
+	background: linear-gradient(to bottom, #007ced 1%, #cce7ff 100%);
+}
+
+#cloud-intro {
+	position: relative;
+	height: 100%;
+	background: url(../assets/clouds1000.png);
+	background: url(../assets/clouds1000.png) 0 200px,
+		url(../assets/clouds1200_1.png) 0 300px,
+		url(../assets/clouds1000_blur3.png) 100px 250px;
+	animation: wind 30s linear infinite;
+}
+
+@keyframes wind {
+	0% {
+		background-position: 0 200px, 0 300px, 100px 250px;
+	}
+	100% {
+		background-position: 1000px 200px, 1200px 300px, 1100px 250px;
+	}
+}

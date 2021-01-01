@@ -1,3 +1,5 @@
+import "./styles.css";
+
 import React, { useState } from "react";
 import { Redirect } from "react-router-dom";
 
@@ -9,9 +11,22 @@ function HomePage() {
 	}
 
 	return (
-		<div>
-			<h1>Welcome to BrowserParty</h1>
-			<button onClick={() => setRedirect(true)}>Get Started</button>
+		<div className="homePage">
+			<div style={{ "min-height": "30vh" }}></div>
+			<h1 className="title">Browser Party</h1>
+			<button className="getStartedButton" onClick={() => setRedirect(true)}>
+				START
+			</button>
+			{/* <div style={{ "min-height": "40px" }}></div>
+			<button
+				style={{ zoom: "95%" }}
+				className="getStartedButton"
+				onClick={() => {
+					window.open("https://github.com/jefliu123/browser-party");
+				}}
+			>
+				GITHUB
+			</button> */}
 		</div>
 	);
 }

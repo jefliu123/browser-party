@@ -1,4 +1,4 @@
-import "../App.css";
+import "./styles.css";
 import React, { useState, useEffect, useContext } from "react";
 
 //firebase
@@ -85,36 +85,38 @@ function GamePage({ gameId }) {
 	}, [game]);
 
 	return (
-		<div id="cloud-intro">
-			{game && game.status === "ingame" ? (
-				<Grid container spacing={0} className={classes.container}>
-					<Grid item xs={1}></Grid>
-					<Grid item xs={10} className={classes.playerBar}>
-						<PlayerBar game={game} currentPlayer={currentPlayer} />
+		<div className="gamePage">
+			<div id="cloud-intro">
+				{game && game.status === "ingame" ? (
+					<Grid container spacing={0} className={classes.container}>
+						<Grid item xs={1}></Grid>
+						<Grid item xs={10} className={classes.playerBar}>
+							<PlayerBar game={game} currentPlayer={currentPlayer} />
+						</Grid>
+						<Grid item xs={1}></Grid>
+						<Grid item xs={1}></Grid>
+						<Grid item xs={7}>
+							<Paper className={classes.gameBoard} elevation={10}>
+								<GameBoard game={game} />
+							</Paper>
+						</Grid>
+						<Grid item xs={3}>
+							<ActionSideBar
+								game={game}
+								currentPlayer={currentPlayer}
+								gameId={gameId}
+							/>
+						</Grid>
+						<Grid item xs={1}></Grid>
 					</Grid>
-					<Grid item xs={1}></Grid>
-					<Grid item xs={1}></Grid>
-					<Grid item xs={7}>
-						<Paper className={classes.gameBoard} elevation={10}>
-							<GameBoard game={game} />
-						</Paper>
-					</Grid>
-					<Grid item xs={3}>
-						<ActionSideBar
-							game={game}
-							currentPlayer={currentPlayer}
-							gameId={gameId}
-						/>
-					</Grid>
-					<Grid item xs={1}></Grid>
-				</Grid>
-			) : (
-				<div style={{ "text-align": "center", height: "100%" }}>
-					<h1 style={{ "padding-top": "100px", "padding-bottom": "100px" }}>
-						No active game found.
-					</h1>
-				</div>
-			)}
+				) : (
+					<div style={{ "text-align": "center", height: "100%" }}>
+						<h1 style={{ "padding-top": "100px", "padding-bottom": "100px" }}>
+							No active game found.
+						</h1>
+					</div>
+				)}
+			</div>
 		</div>
 	);
 }
