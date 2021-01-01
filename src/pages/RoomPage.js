@@ -53,7 +53,7 @@ function RoomPage({ gameId }) {
 						type: "public",
 						status: "waiting",
 						playerOrder: [],
-						gameData: { players: {}, phase: "", turn: 0 },
+						gameData: { players: {}, phase: "rolling", turn: 0 },
 					});
 			}
 		}
@@ -71,7 +71,7 @@ function RoomPage({ gameId }) {
 
 		if (value) {
 			gameRef.update({
-				[`gameData.players.${value}`]: { coins: 0, stars: 0, boardPos: 0 },
+				[`gameData.players.${value}`]: { coins: 10, stars: 0, boardPos: 0 },
 			});
 			registerPlayer(value);
 		}
@@ -99,6 +99,16 @@ function RoomPage({ gameId }) {
 		unregisterPlayer();
 	}
 
+	function populate() {
+		gameRef.update({
+			"gameData.players.ashley": { coins: 10, stars: 0, boardPos: 0 },
+			"gameData.players.emily": { coins: 10, stars: 0, boardPos: 0 },
+			"gameData.players.alan": { coins: 10, stars: 0, boardPos: 0 },
+			"gameData.players.aaron": { coins: 10, stars: 0, boardPos: 0 },
+			"gameData.players.brian": { coins: 10, stars: 0, boardPos: 0 },
+		});
+	}
+
 	if (redirect) {
 		return <Redirect to={redirect} push />;
 	}
@@ -111,6 +121,7 @@ function RoomPage({ gameId }) {
 				<div>
 					<p>You are registered as {name}</p>
 					<button onClick={unregister}>Unregister</button>
+					<button onClick={populate}>Test Populate</button>
 				</div>
 			)}
 			<h1>Room: {gameId}</h1>
