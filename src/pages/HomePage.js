@@ -28,31 +28,6 @@ function HomePage() {
 				GITHUB
 			</button> */}
 		</div>
-		<Button id = "button" onClick={() => setRedirect(true)}>Get Started</Button>
-		<Carousel interval={3500}>
-		<Carousel.Item>
-		  <img  
-			className="d-block w-100"
-			src={tetris}
-			alt="First slide"
-		  />
-		</Carousel.Item>
-		<Carousel.Item>
-		  <img 
-			className="d-block w-100"
-			src={skribblio}
-			alt="Second slide"
-		  />
-		</Carousel.Item>
-		<Carousel.Item>
-		  <img 
-			className="d-block w-100"
-			src={typeracer}
-			alt="Third slide"
-		  />
-		</Carousel.Item>
-	  </Carousel>
-	</Container>
 	);
 }
 
