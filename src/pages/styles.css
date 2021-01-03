@@ -115,3 +115,7 @@
 		background-position: 1000px 200px, 1200px 300px, 1100px 250px;
 	}
 }
+
+.minigameRules {
+	min-height: 45vh;
+}
