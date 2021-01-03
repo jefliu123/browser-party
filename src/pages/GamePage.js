@@ -119,7 +119,7 @@ function GamePage({ gameId }) {
 								https://skribbl.io/
 							</a>{" "}
 							<br></br>
-							Create private room -><br></br>
+							Create private room -<br></br>
 							Share link<br></br>
 							Rounds: 1<br></br>
 							Draw time: 30 seconds<br></br>
@@ -144,7 +144,7 @@ function GamePage({ gameId }) {
 								https://jstris.jezevec10.com/
 							</a>{" "}
 							<br></br>
-							Lobby -> Create Room -><br></br>
+							Lobby - Create Room -<br></br>
 							Share link<br></br>
 							Private: check<br></br>
 							Presets: default<br></br>
@@ -169,7 +169,7 @@ function GamePage({ gameId }) {
 								https://play.typeracer.com/
 							</a>{" "}
 							<br></br>
-							Race Your Friends -><br></br>
+							Race Your Friends -<br></br>
 							Share link<br></br>
 						</h2>
 						<h1>TOP 3 WIN</h1>
@@ -192,7 +192,7 @@ function GamePage({ gameId }) {
 								https://codies.xyz/
 							</a>{" "}
 							<br></br>
-							Enter name, password -> Create New Game -><br></br>
+							Enter name, password - Create New Game -<br></br>
 							Share link<br></br>
 							Randomize teams once<br></br>
 							30 second timer if necessary<br></br>
@@ -217,7 +217,7 @@ function GamePage({ gameId }) {
 								https://spyfall.adrianocola.com/#
 							</a>{" "}
 							<br></br>
-							Create Room -><br></br>
+							Create Room -<br></br>
 							Share link<br></br>
 							Timer: 6:00<br></br>
 						</h2>
@@ -241,7 +241,7 @@ function GamePage({ gameId }) {
 								https://protobowl.com/
 							</a>{" "}
 							<br></br>
-							Go to Room -><br></br>
+							Go to Room -<br></br>
 							Share link<br></br>
 							Difficulty: Middle School, Everything<br></br>
 							Play at least 10 questions<br></br>
