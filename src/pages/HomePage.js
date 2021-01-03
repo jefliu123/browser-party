@@ -12,7 +12,7 @@ function HomePage() {
 
 	return (
 		<div className="homePage">
-			<div style={{ "min-height": "30vh" }}></div>
+			<div style={{ minHeight: "30vh" }}></div>
 			<h1 className="title">Browser Party</h1>
 			<button className="getStartedButton" onClick={() => setRedirect(true)}>
 				START

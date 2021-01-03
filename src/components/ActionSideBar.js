@@ -1,3 +1,5 @@
+import "./styles.css";
+
 import React, { useState, useEffect, useContext } from "react";
 
 //firebase
@@ -8,6 +10,10 @@ import "firebase/auth";
 
 //context
 import { PlayerContext } from "../context/player";
+
+//assets
+import star from "../assets/star.png";
+import character from "../assets/character.png";
 
 //material-ui
 import { makeStyles } from "@material-ui/core/styles";
@@ -36,11 +42,264 @@ const useStyles = makeStyles((theme) => ({
 	root: {
 		flexGrow: 1,
 	},
+	actionSideBar: {
+		textAlign: "center",
+		backgroundColor: "#00000029",
+		minHeight: "75vh",
+		margin: "10px",
+	},
 }));
 
 function ActionSideBar({ game, currentPlayer, gameId }) {
 	const classes = useStyles();
 	const { name, isRegistered } = useContext(PlayerContext);
+
+	const [nextBoardPos, setNextBoardPos] = useState(0);
+	const [diceAnimated, setDiceAnimated] = useState(false);
+
+	useEffect(() => {
+		if (game && currentPlayer) {
+			setNextBoardPos(nextPos(game.gameData.players[currentPlayer].boardPos));
+		}
+	}, [game, currentPlayer]);
+
+	function rollDice() {
+		firestore
+			.collection("games")
+			.doc(`${gameId}`)
+			.update({
+				"gameData.roll": Math.floor(Math.random() * 6 + 1),
+				// "gameData.roll": 7,
+				"gameData.phase": "rolled",
+			});
+		setDiceAnimated(false);
+	}
+
+	function goToMoving() {
+		firestore.collection("games").doc(`${gameId}`).update({
+			"gameData.phase": "moving",
+		});
+	}
+
+	function setLeftFork() {
+		switch (game.gameData.players[currentPlayer].boardPos) {
+			case 7:
+				setNextBoardPos(8);
+				break;
+			case 14:
+				setNextBoardPos(22);
+				break;
+			case 25:
+				setNextBoardPos(26);
+				break;
+			default:
+		}
+	}
+
+	function setRightFork() {
+		switch (game.gameData.players[currentPlayer].boardPos) {
+			case 7:
+				setNextBoardPos(3);
+				break;
+			case 14:
+				setNextBoardPos(15);
+				break;
+			case 25:
+				setNextBoardPos(32);
+				break;
+			default:
+		}
+	}
+
+	function moveOneSpace() {
+		if (game.gameData.roll > 1) {
+			firestore
+				.collection("games")
+				.doc(`${gameId}`)
+				.update({
+					[`gameData.players.${name}.boardPos`]: nextBoardPos,
+					"gameData.roll": firebase.firestore.FieldValue.increment(-1),
+				});
+		} else {
+			let tempNextBoardPos = landedAt(nextBoardPos);
+			firestore
+				.collection("games")
+				.doc(`${gameId}`)
+				.update({
+					[`gameData.players.${name}.boardPos`]: tempNextBoardPos,
+					"gameData.roll": 0,
+					"gameData.phase": "landed",
+				});
+		}
+	}
+
+	function buyStar() {
+		if (game.gameData.players[currentPlayer].coins >= 20) {
+			let newStarPos = game.gameData.players[currentPlayer].boardPos;
+			switch (game.gameData.players[currentPlayer].boardPos) {
+				case 30:
+					newStarPos = 44;
+					break;
+				case 44:
+					newStarPos = 19;
+					break;
+				case 19:
+					newStarPos = 5;
+					break;
+				case 5:
+					newStarPos = 30;
+					break;
+				default:
+			}
+			firestore
+				.collection("games")
+				.doc(`${gameId}`)
+				.update({
+					[`gameData.players.${name}.coins`]: firebase.firestore.FieldValue.increment(
+						-20
+					),
+					[`gameData.players.${name}.stars`]: firebase.firestore.FieldValue.increment(
+						1
+					),
+					"gameData.starPos": newStarPos,
+				});
+		}
+	}
+
+	function landedAt(landedPos) {
+		switch (landedPos) {
+			case 1:
+			case 3:
+			case 5:
+			case 7:
+			case 8:
+			case 10:
+			case 12:
+			case 14:
+			case 16:
+			case 18:
+			case 19:
+			case 21:
+			case 22:
+			case 23:
+			case 25:
+			case 27:
+			case 28:
+			case 30:
+			case 31:
+			case 32:
+			case 34:
+			case 35:
+			case 37:
+			case 38:
+			case 40:
+			case 42:
+			case 43:
+			case 45:
+				firestore
+					.collection("games")
+					.doc(`${gameId}`)
+					.update({
+						[`gameData.players.${name}.coins`]: firebase.firestore.FieldValue.increment(
+							3
+						),
+					});
+				return landedPos;
+			case 4:
+			case 9:
+			case 13:
+			case 20:
+			case 24:
+			case 33:
+			case 39:
+			case 44:
+				firestore
+					.collection("games")
+					.doc(`${gameId}`)
+					.update({
+						[`gameData.players.${name}.coins`]: firebase.firestore.FieldValue.increment(
+							-3
+						),
+					});
+				return landedPos;
+			case 2:
+				return 41;
+			case 17:
+				return 29;
+			case 29:
+				return 17;
+			case 41:
+				return 2;
+			case 6:
+			case 11:
+			case 15:
+			case 26:
+			case 36:
+				firestore
+					.collection("games")
+					.doc(`${gameId}`)
+					.update({
+						[`gameData.stealCoins`]: true,
+					});
+				return landedPos;
+			default:
+		}
+	}
+
+	function landedMessage() {
+		switch (game.gameData.players[currentPlayer].boardPos) {
+			case 1:
+			case 3:
+			case 5:
+			case 7:
+			case 8:
+			case 10:
+			case 12:
+			case 14:
+			case 16:
+			case 18:
+			case 19:
+			case 21:
+			case 22:
+			case 23:
+			case 25:
+			case 27:
+			case 28:
+			case 30:
+			case 31:
+			case 32:
+			case 34:
+			case 35:
+			case 37:
+			case 38:
+			case 40:
+			case 42:
+			case 43:
+			case 45:
+				return " got 3 coins";
+			case 4:
+			case 9:
+			case 13:
+			case 20:
+			case 24:
+			case 33:
+			case 39:
+			case 44:
+				return " lost 3 coins";
+			case 2:
+			case 17:
+			case 29:
+			case 41:
+				return " teleported";
+			case 6:
+			case 11:
+			case 15:
+			case 26:
+			case 36:
+				return " hate orange";
+			default:
+		}
+	}
 
 	function incrementTurn() {
 		if (
@@ -60,73 +319,485 @@ function ActionSideBar({ game, currentPlayer, gameId }) {
 				.doc(`${gameId}`)
 				.update({
 					"gameData.turn": firebase.firestore.FieldValue.increment(1),
+					"gameData.phase": "rolling",
 				});
 		}
 	}
 
-	function incrementBoardPos() {
-		firestore
-			.collection("games")
-			.doc(`${gameId}`)
-			.update({
-				[`gameData.players.${name}.boardPos`]: firebase.firestore.FieldValue.increment(
-					1
-				),
-			});
+	function nextPos(currentPos) {
+		switch (currentPos) {
+			case 21:
+				return 1;
+			case 31:
+				return 22;
+			case 45:
+				return 32;
+			case 7:
+			case 14:
+			case 25:
+				return 0;
+			default:
+				return currentPos + 1;
+		}
 	}
 
-	function decrementBoardPos() {
-		firestore
-			.collection("games")
-			.doc(`${gameId}`)
-			.update({
-				[`gameData.players.${name}.boardPos`]: firebase.firestore.FieldValue.increment(
-					-1
-				),
-			});
-	}
-
-	function endMinigamePhase() {
-		firestore.collection("games").doc(`${gameId}`).update({
-			"gameData.phase": "rolling",
-		});
+	function renderRolledDice(roll) {
+		switch (roll) {
+			case 1:
+				return (
+					<div class="side front">
+						<div class="dot center"></div>
+					</div>
+				);
+			case 2:
+				return (
+					<div class="side front">
+						<div class="dot dtop dleft"></div>
+						<div class="dot dbottom dright"></div>
+					</div>
+				);
+			case 3:
+				return (
+					<div class="side front">
+						<div class="dot dtop dleft"></div>
+						<div class="dot center"></div>
+						<div class="dot dbottom dright"></div>
+					</div>
+				);
+			case 4:
+				return (
+					<div class="side front">
+						<div class="dot dtop dleft"></div>
+						<div class="dot dtop dright"></div>
+						<div class="dot dbottom dleft"></div>
+						<div class="dot dbottom dright"></div>
+					</div>
+				);
+			case 5:
+				return (
+					<div class="side front">
+						<div class="dot center"></div>
+						<div class="dot dtop dleft"></div>
+						<div class="dot dtop dright"></div>
+						<div class="dot dbottom dleft"></div>
+						<div class="dot dbottom dright"></div>
+					</div>
+				);
+			case 6:
+				return (
+					<div class="side front">
+						<div class="dot dtop dleft"></div>
+						<div class="dot dtop dright"></div>
+						<div class="dot dbottom dleft"></div>
+						<div class="dot dbottom dright"></div>
+						<div class="dot center dleft"></div>
+						<div class="dot center dright"></div>
+					</div>
+				);
+			default:
+				return <div class="side front"></div>;
+		}
 	}
 
 	return (
 		<div className={classes.root}>
-			<Grid container spacing={0}>
-				<Grid item xs={12}>
-					<Paper>
-						{name === currentPlayer && game.gameData.phase !== "minigame" && (
-							<div>
-								<h2>It is your turn {name}</h2>
-								{game.gameData.phase === "rolling" && (
-									<div>
-										<button onClick={incrementBoardPos}> Go forward </button>
-										<button onClick={decrementBoardPos}> Go back </button>
-									</div>
-								)}
-							</div>
-						)}
-
-						<div>
-							<button onClick={incrementTurn}>End Turn</button>
+			{currentPlayer && (
+				<Grid container spacing={0}>
+					<Grid item xs={12}>
+						<Paper className={classes.actionSideBar}>
+							{name === currentPlayer && game.gameData.phase !== "minigame" && (
+								<div style={{ padding: "25px" }}>
+									<h1>{currentPlayer.toUpperCase()}'S TURN</h1>
+									{game.gameData.phase === "rolling" && (
+										<div>
+											<div id="wrapper" className="animationDiv">
+												<div id="platform">
+													<div
+														id="dice"
+														className={
+															diceAnimated
+																? "fastDiceAnimation"
+																: "slowDiceAnimation"
+														}
+														onAnimationEnd={rollDice}
+													>
+														<div class="side front">
+															<div class="dot center"></div>
+														</div>
+														<div class="side front inner"></div>
+														<div class="side top">
+															<div class="dot dtop dleft"></div>
+															<div class="dot dbottom dright"></div>
+														</div>
+														<div class="side top inner"></div>
+														<div class="side right">
+															<div class="dot dtop dleft"></div>
+															<div class="dot center"></div>
+															<div class="dot dbottom dright"></div>
+														</div>
+														<div class="side right inner"></div>
+														<div class="side left">
+															<div class="dot dtop dleft"></div>
+															<div class="dot dtop dright"></div>
+															<div class="dot dbottom dleft"></div>
+															<div class="dot dbottom dright"></div>
+														</div>
+														<div class="side left inner"></div>
+														<div class="side bottom">
+															<div class="dot center"></div>
+															<div class="dot dtop dleft"></div>
+															<div class="dot dtop dright"></div>
+															<div class="dot dbottom dleft"></div>
+															<div class="dot dbottom dright"></div>
+														</div>
+														<div class="side bottom inner"></div>
+														<div class="side back">
+															<div class="dot dtop dleft"></div>
+															<div class="dot dtop dright"></div>
+															<div class="dot dbottom dleft"></div>
+															<div class="dot dbottom dright"></div>
+															<div class="dot center dleft"></div>
+															<div class="dot center dright"></div>
+														</div>
+														<div class="side back inner"></div>
+														<div class="side cover x"></div>
+														<div class="side cover y"></div>
+														<div class="side cover z"></div>
+													</div>
+												</div>
+											</div>
+											<button
+												className="gameButton"
+												onClick={() => {
+													setDiceAnimated(true);
+												}}
+											>
+												ROLL
+											</button>
+										</div>
+									)}
+									{game.gameData.phase === "rolled" && (
+										<div>
+											<div id="wrapper" className="animationDiv">
+												<div id="platform">
+													<div id="dice">
+														{renderRolledDice(game.gameData.roll)}
+														<div class="side front inner"></div>
+													</div>
+												</div>
+											</div>
+											<button className="gameButton" onClick={goToMoving}>
+												NEXT
+											</button>
+										</div>
+									)}
+									{game.gameData.phase === "moving" && (
+										<div>
+											<div className="animationDiv2">
+												{game.gameData.players[currentPlayer].boardPos ===
+												game.gameData.starPos ? (
+													<div className="movingDiv">
+														<img
+															src={star}
+															alt="star"
+															style={{
+																maxWidth: "50%",
+																height: "auto",
+															}}
+														/>
+														<h2>
+															You are at a star<br></br>Purchase for 20 coins?
+														</h2>
+													</div>
+												) : (
+													<div className="movingDiv">
+														<img
+															src={character}
+															alt="character"
+															className="character"
+														/>
+													</div>
+												)}
+											</div>
+											{nextBoardPos === 0 ? (
+												<div>
+													<h2>You are at a crossroads</h2>
+													<div>
+														<button
+															className="rightLeftButton"
+															onClick={setLeftFork}
+														>
+															LEFT
+														</button>
+														<span> </span>
+														<button
+															className="rightLeftButton"
+															onClick={setRightFork}
+														>
+															RIGHT
+														</button>
+													</div>
+												</div>
+											) : (
+												<div>
+													{game.gameData.players[currentPlayer].boardPos ===
+														game.gameData.starPos && (
+														<div style={{ zoom: "80%" }}>
+															<button className="gameButton" onClick={buyStar}>
+																BUY
+															</button>
+															<div style={{ minHeight: "20px" }}></div>
+														</div>
+													)}
+													<button className="gameButton" onClick={moveOneSpace}>
+														MOVE
+													</button>
+												</div>
+											)}
+											<h2>{game.gameData.roll} move(s) left</h2>
+										</div>
+									)}
+									{game.gameData.phase === "landed" && (
+										<div>
+											<div className="animationDiv2">
+												{game.gameData.players[currentPlayer].boardPos ===
+												game.gameData.starPos ? (
+													<div className="movingDiv2">
+														<h2>You {landedMessage()}</h2>
+														<img
+															src={star}
+															alt="star"
+															style={{
+																maxWidth: "50%",
+																height: "auto",
+															}}
+														/>
+														<h2>
+															You are at a star<br></br>Purchase for 20 coins?
+														</h2>
+													</div>
+												) : (
+													<div>
+														<h2>You {landedMessage()}</h2>
+													</div>
+												)}
+											</div>
+											<div>
+												{game.gameData.players[currentPlayer].boardPos ===
+													game.gameData.starPos && (
+													<div style={{ zoom: "80%" }}>
+														<button className="gameButton" onClick={buyStar}>
+															BUY
+														</button>
+														<div style={{ minHeight: "20px" }}></div>
+													</div>
+												)}
+												<button className="gameButton" onClick={incrementTurn}>
+													END
+												</button>
+											</div>
+										</div>
+									)}
+								</div>
+							)}
+							{name !== currentPlayer && game.gameData.phase !== "minigame" && (
+								<div style={{ padding: "25px", opacity: 0.7 }}>
+									<h1>{currentPlayer.toUpperCase()}'S TURN</h1>
+									{game.gameData.phase === "rolling" && (
+										<div>
+											<div id="wrapper" className="animationDiv">
+												<div id="platform">
+													<div
+														id="dice"
+														className={"fastDiceAnimationInfinite"}
+													>
+														<div class="side front">
+															<div class="dot center"></div>
+														</div>
+														<div class="side front inner"></div>
+														<div class="side top">
+															<div class="dot dtop dleft"></div>
+															<div class="dot dbottom dright"></div>
+														</div>
+														<div class="side top inner"></div>
+														<div class="side right">
+															<div class="dot dtop dleft"></div>
+															<div class="dot center"></div>
+															<div class="dot dbottom dright"></div>
+														</div>
+														<div class="side right inner"></div>
+														<div class="side left">
+															<div class="dot dtop dleft"></div>
+															<div class="dot dtop dright"></div>
+															<div class="dot dbottom dleft"></div>
+															<div class="dot dbottom dright"></div>
+														</div>
+														<div class="side left inner"></div>
+														<div class="side bottom">
+															<div class="dot center"></div>
+															<div class="dot dtop dleft"></div>
+															<div class="dot dtop dright"></div>
+															<div class="dot dbottom dleft"></div>
+															<div class="dot dbottom dright"></div>
+														</div>
+														<div class="side bottom inner"></div>
+														<div class="side back">
+															<div class="dot dtop dleft"></div>
+															<div class="dot dtop dright"></div>
+															<div class="dot dbottom dleft"></div>
+															<div class="dot dbottom dright"></div>
+															<div class="dot center dleft"></div>
+															<div class="dot center dright"></div>
+														</div>
+														<div class="side back inner"></div>
+														<div class="side cover x"></div>
+														<div class="side cover y"></div>
+														<div class="side cover z"></div>
+													</div>
+												</div>
+											</div>
+											<button className="gameButton" onClick={() => {}}>
+												ROLL
+											</button>
+										</div>
+									)}
+									{game.gameData.phase === "rolled" && (
+										<div>
+											<div id="wrapper" className="animationDiv">
+												<div id="platform">
+													<div id="dice">
+														{renderRolledDice(game.gameData.roll)}
+														<div class="side front inner"></div>
+													</div>
+												</div>
+											</div>
+											<button className="gameButton" onClick={() => {}}>
+												NEXT
+											</button>
+										</div>
+									)}
+									{game.gameData.phase === "moving" && (
+										<div>
+											<div className="animationDiv2">
+												{game.gameData.players[currentPlayer].boardPos ===
+												game.gameData.starPos ? (
+													<div className="movingDiv">
+														<img
+															src={star}
+															alt="star"
+															style={{
+																maxWidth: "50%",
+																height: "auto",
+															}}
+														/>
+														<h2>
+															You are at a star<br></br>Purchase for 20 coins?
+														</h2>
+													</div>
+												) : (
+													<div className="movingDiv">
+														<img
+															src={character}
+															alt="character"
+															className="character"
+														/>
+													</div>
+												)}
+											</div>
+											{nextBoardPos === 0 ? (
+												<div>
+													<h2>You are at a crossroads</h2>
+													<div>
+														<button
+															className="rightLeftButton"
+															onClick={() => {}}
+														>
+															LEFT
+														</button>
+														<span> </span>
+														<button
+															className="rightLeftButton"
+															onClick={() => {}}
+														>
+															RIGHT
+														</button>
+													</div>
+												</div>
+											) : (
+												<div>
+													{game.gameData.players[currentPlayer].boardPos ===
+														game.gameData.starPos && (
+														<div style={{ zoom: "80%" }}>
+															<button className="gameButton" onClick={() => {}}>
+																BUY
+															</button>
+															<div style={{ minHeight: "20px" }}></div>
+														</div>
+													)}
+													<button className="gameButton" onClick={() => {}}>
+														MOVE
+													</button>
+												</div>
+											)}
+											<h2>{game.gameData.roll} move(s) left</h2>
+										</div>
+									)}
+									{game.gameData.phase === "landed" && (
+										<div>
+											<div className="animationDiv2">
+												{game.gameData.players[currentPlayer].boardPos ===
+												game.gameData.starPos ? (
+													<div className="movingDiv2">
+														<h2>You {landedMessage()}</h2>
+														<img
+															src={star}
+															alt="star"
+															style={{
+																maxWidth: "50%",
+																height: "auto",
+															}}
+														/>
+														<h2>
+															You are at a star<br></br>Purchase for 20 coins?
+														</h2>
+													</div>
+												) : (
+													<div>
+														<h2>You {landedMessage()}</h2>
+													</div>
+												)}
+											</div>
+											<div>
+												{game.gameData.players[currentPlayer].boardPos ===
+													game.gameData.starPos && (
+													<div style={{ zoom: "80%" }}>
+														<button className="gameButton" onClick={() => {}}>
+															BUY
+														</button>
+														<div style={{ minHeight: "20px" }}></div>
+													</div>
+												)}
+												<button className="gameButton" onClick={() => {}}>
+													END
+												</button>
+											</div>
+										</div>
+									)}
+								</div>
+							)}
+						</Paper>
+					</Grid>
+					<Grid item xs={12}>
+						<div style={{ textAlign: "center" }}>
+							<span>
+								Round:{" "}
+								{Math.floor(game.gameData.turn / game.playerOrder.length) + 1}{" "}
+							</span>
+							<button onClick={incrementTurn}>Force End Turn</button>
 						</div>
-					</Paper>
+					</Grid>
 				</Grid>
-				<Grid item xs={12}></Grid>
-				<Grid item xs={12}>
-					{game.gameData.phase === "minigame" && (
-						<div>
-							<p>--------------------------------</p>
-							<h2>MINIGAME TIME</h2>
-							<p>Go to ...................... blah blah</p>
-							<p>Input Scores ...................... blah blah</p>
-							<button onClick={endMinigamePhase}>Next</button>
-						</div>
-					)}
-				</Grid>
-			</Grid>
+			)}
 		</div>
 	);
 }

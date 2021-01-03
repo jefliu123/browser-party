@@ -50,10 +50,19 @@ function RoomPage({ gameId }) {
 					.collection("games")
 					.doc(`${gameId}`)
 					.set({
+						createdAt: firebase.firestore.FieldValue.serverTimestamp(),
 						type: "public",
 						status: "waiting",
 						playerOrder: [],
-						gameData: { players: {}, phase: "rolling", turn: 0 },
+						gameData: {
+							players: {},
+							phase: "rolling",
+							turn: 0,
+							roll: 0,
+							starPos: 19,
+							stealCoins: false,
+							minigame: Math.floor(Math.random(0, 6)),
+						},
 					});
 			}
 		}
@@ -113,7 +122,7 @@ function RoomPage({ gameId }) {
 		return <Redirect to={redirect} push />;
 	}
 
-	const link = "localhost:3010/room/" + gameId;
+	const link = "browserparty.web.app/room/" + gameId;
 
 	return (
 		<div>
