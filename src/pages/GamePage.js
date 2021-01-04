@@ -71,7 +71,7 @@ const useStyles = makeStyles((theme) => ({
 function GamePage({ gameId }) {
 	const classes = useStyles();
 
-	const { name, isRegistered } = useContext(PlayerContext);
+	const { name } = useContext(PlayerContext);
 
 	const [game, setGame] = useState(null);
 	const [currentPlayer, setCurrentPlayer] = useState("");

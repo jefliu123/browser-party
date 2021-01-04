@@ -52,7 +52,7 @@ const useStyles = makeStyles((theme) => ({
 
 function ActionSideBar({ game, currentPlayer, gameId }) {
 	const classes = useStyles();
-	const { name, isRegistered } = useContext(PlayerContext);
+	const { name } = useContext(PlayerContext);
 
 	const [nextBoardPos, setNextBoardPos] = useState(0);
 	const [diceAnimated, setDiceAnimated] = useState(false);
@@ -69,7 +69,7 @@ function ActionSideBar({ game, currentPlayer, gameId }) {
 			.doc(`${gameId}`)
 			.update({
 				"gameData.roll": Math.floor(Math.random() * 6 + 1),
-				// "gameData.roll": 7,
+				// "gameData.roll": 4,
 				"gameData.phase": "rolled",
 			});
 		setDiceAnimated(false);
@@ -235,12 +235,19 @@ function ActionSideBar({ game, currentPlayer, gameId }) {
 			case 15:
 			case 26:
 			case 36:
-				firestore
-					.collection("games")
-					.doc(`${gameId}`)
-					.update({
-						[`gameData.stealCoins`]: true,
-					});
+				let targetPos = Math.floor(Math.random() * game.playerOrder.length);
+				let target = game.playerOrder[targetPos];
+				if (target === name) {
+					if (targetPos !== game.playerOrder.length - 1) {
+						target = game.playerOrder[targetPos + 1];
+					} else {
+						target = game.playerOrder[targetPos - 1];
+					}
+				}
+				firestore.collection("games").doc(`${gameId}`).update({
+					"gameData.stealCoins": true,
+					"gameData.stealTarget": target,
+				});
 				return landedPos;
 			default:
 		}
@@ -296,30 +303,101 @@ function ActionSideBar({ game, currentPlayer, gameId }) {
 			case 15:
 			case 26:
 			case 36:
-				return " hate orange";
+				return ` are dueling ${game.gameData.stealTarget}`;
 			default:
 		}
 	}
 
 	function incrementTurn() {
+		var targetName = game.gameData.stealTarget;
 		if (
 			game.gameData.turn % game.playerOrder.length ===
 			game.playerOrder.length - 1
 		) {
+			if (game.gameData.stealCoins === true) {
+				switch (rpsResult(game.gameData.rps1, game.gameData.rps2)) {
+					case "P1WIN":
+						firestore
+							.collection("games")
+							.doc(`${gameId}`)
+							.update({
+								[`gameData.players.${name}.coins`]: firebase.firestore.FieldValue.increment(
+									5
+								),
+								[`gameData.players.${targetName}.coins`]: firebase.firestore.FieldValue.increment(
+									-5
+								),
+							});
+						break;
+					case "P2WIN":
+						firestore
+							.collection("games")
+							.doc(`${gameId}`)
+							.update({
+								[`gameData.players.${name}.coins`]: firebase.firestore.FieldValue.increment(
+									-5
+								),
+								[`gameData.players.${targetName}.coins`]: firebase.firestore.FieldValue.increment(
+									5
+								),
+							});
+						break;
+					default:
+				}
+			}
 			firestore
 				.collection("games")
 				.doc(`${gameId}`)
 				.update({
 					"gameData.turn": firebase.firestore.FieldValue.increment(1),
 					"gameData.phase": "minigame",
+					"gameData.stealCoins": false,
+					"gameData.stealTarget": "",
+					"gameData.rps1": "",
+					"gameData.rps2": "",
 				});
 		} else {
+			if (game.gameData.stealCoins === true) {
+				switch (rpsResult(game.gameData.rps1, game.gameData.rps2)) {
+					case "P1WIN":
+						firestore
+							.collection("games")
+							.doc(`${gameId}`)
+							.update({
+								[`gameData.players.${name}.coins`]: firebase.firestore.FieldValue.increment(
+									5
+								),
+								[`gameData.players.${targetName}.coins`]: firebase.firestore.FieldValue.increment(
+									-5
+								),
+							});
+						break;
+					case "P2WIN":
+						firestore
+							.collection("games")
+							.doc(`${gameId}`)
+							.update({
+								[`gameData.players.${name}.coins`]: firebase.firestore.FieldValue.increment(
+									-5
+								),
+								[`gameData.players.${targetName}.coins`]: firebase.firestore.FieldValue.increment(
+									5
+								),
+							});
+						break;
+					default:
+				}
+			}
 			firestore
 				.collection("games")
 				.doc(`${gameId}`)
 				.update({
 					"gameData.turn": firebase.firestore.FieldValue.increment(1),
 					"gameData.phase": "rolling",
+					"gameData.stealCoins": false,
+					"gameData.stealTarget": "",
+					"gameData.rps1": "",
+					"gameData.rps2": "",
 				});
 		}
 	}
@@ -396,6 +474,82 @@ function ActionSideBar({ game, currentPlayer, gameId }) {
 				);
 			default:
 				return <div class="side front"></div>;
+		}
+	}
+
+	function playerOneRock() {
+		firestore.collection("games").doc(`${gameId}`).update({
+			"gameData.rps1": "rock",
+		});
+	}
+
+	function playerOnePaper() {
+		firestore.collection("games").doc(`${gameId}`).update({
+			"gameData.rps1": "paper",
+		});
+	}
+
+	function playerOneScissors() {
+		firestore.collection("games").doc(`${gameId}`).update({
+			"gameData.rps1": "scissors",
+		});
+	}
+
+	function playerTwoRock() {
+		firestore.collection("games").doc(`${gameId}`).update({
+			"gameData.rps2": "rock",
+		});
+	}
+
+	function playerTwoPaper() {
+		firestore.collection("games").doc(`${gameId}`).update({
+			"gameData.rps2": "paper",
+		});
+	}
+
+	function playerTwoScissors() {
+		firestore.collection("games").doc(`${gameId}`).update({
+			"gameData.rps2": "scissors",
+		});
+	}
+
+	function rpsResult(rps1, rps2) {
+		switch (rps1) {
+			case "rock":
+				switch (rps2) {
+					case "rock":
+						return "TIE";
+					case "paper":
+						return "P2WIN";
+					case "scissors":
+						return "P1WIN";
+					default:
+						return "error";
+				}
+			case "paper":
+				switch (rps2) {
+					case "rock":
+						return "P1WIN";
+					case "paper":
+						return "TIE";
+					case "scissors":
+						return "P2WIN";
+					default:
+						return "error";
+				}
+			case "scissors":
+				switch (rps2) {
+					case "rock":
+						return "P2WIN";
+					case "paper":
+						return "P1WIN";
+					case "scissors":
+						return "TIE";
+					default:
+						return "error";
+				}
+			default:
+				return "error";
 		}
 	}
 
@@ -579,6 +733,56 @@ function ActionSideBar({ game, currentPlayer, gameId }) {
 												) : (
 													<div>
 														<h2>You {landedMessage()}</h2>
+														{game.gameData.stealCoins === true && (
+															<div>
+																{game.gameData.rps1 !== "" &&
+																game.gameData.rps2 !== "" ? (
+																	<div>
+																		<h2>Result:</h2>
+																		<h2>
+																			{rpsResult(
+																				game.gameData.rps1,
+																				game.gameData.rps2
+																			)}
+																		</h2>
+																	</div>
+																) : (
+																	<div>
+																		<h2>Choose wisely:</h2>
+																		{game.gameData.rps1 === "" ? (
+																			<div style={{ zoom: "80%" }}>
+																				<button
+																					className="gameButton"
+																					onClick={playerOneRock}
+																				>
+																					ROCK
+																				</button>
+																				<div
+																					style={{ minHeight: "20px" }}
+																				></div>
+																				<button
+																					className="gameButton"
+																					onClick={playerOnePaper}
+																				>
+																					PAPER
+																				</button>
+																				<div
+																					style={{ minHeight: "20px" }}
+																				></div>
+																				<button
+																					className="gameButton"
+																					onClick={playerOneScissors}
+																				>
+																					SCISSORS
+																				</button>
+																			</div>
+																		) : (
+																			<h2>Waiting for opponent..</h2>
+																		)}
+																	</div>
+																)}
+															</div>
+														)}
 													</div>
 												)}
 											</div>
@@ -764,6 +968,94 @@ function ActionSideBar({ game, currentPlayer, gameId }) {
 												) : (
 													<div>
 														<h2>You {landedMessage()}</h2>
+														{game.gameData.stealCoins === true && (
+															<div>
+																{game.gameData.rps1 !== "" &&
+																game.gameData.rps2 !== "" ? (
+																	<div>
+																		<h2>Result:</h2>
+																		<h2>
+																			{rpsResult(
+																				game.gameData.rps1,
+																				game.gameData.rps2
+																			)}
+																		</h2>
+																	</div>
+																) : (
+																	<div>
+																		{game.gameData.stealTarget !== name ? (
+																			<div>
+																				<h2>Choose wisely:</h2>
+																				{game.gameData.rps1 === "" ? (
+																					<div style={{ zoom: "80%" }}>
+																						<button
+																							className="gameButton"
+																							onClick={() => {}}
+																						>
+																							ROCK
+																						</button>
+																						<div
+																							style={{ minHeight: "20px" }}
+																						></div>
+																						<button
+																							className="gameButton"
+																							onClick={() => {}}
+																						>
+																							PAPER
+																						</button>
+																						<div
+																							style={{ minHeight: "20px" }}
+																						></div>
+																						<button
+																							className="gameButton"
+																							onClick={() => {}}
+																						>
+																							SCISSORS
+																						</button>
+																					</div>
+																				) : (
+																					<h2>Waiting for opponent..</h2>
+																				)}
+																			</div>
+																		) : (
+																			<div style={{ opacity: 1 }}>
+																				<h2>*THAT'S YOU*</h2>
+																				{game.gameData.rps2 === "" ? (
+																					<div style={{ zoom: "80%" }}>
+																						<button
+																							className="gameButton"
+																							onClick={playerTwoRock}
+																						>
+																							ROCK
+																						</button>
+																						<div
+																							style={{ minHeight: "20px" }}
+																						></div>
+																						<button
+																							className="gameButton"
+																							onClick={playerTwoPaper}
+																						>
+																							PAPER
+																						</button>
+																						<div
+																							style={{ minHeight: "20px" }}
+																						></div>
+																						<button
+																							className="gameButton"
+																							onClick={playerTwoScissors}
+																						>
+																							SCISSORS
+																						</button>
+																					</div>
+																				) : (
+																					<h2>Waiting for opponent..</h2>
+																				)}
+																			</div>
+																		)}
+																	</div>
+																)}
+															</div>
+														)}
 													</div>
 												)}
 											</div>

@@ -61,6 +61,9 @@ function RoomPage({ gameId }) {
 							roll: 0,
 							starPos: 19,
 							stealCoins: false,
+							stealTarget: "",
+							rps1: "",
+							rps2: "",
 							minigame: Math.floor(Math.random(0, 6)),
 						},
 					});
