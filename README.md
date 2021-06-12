@@ -1,70 +1,80 @@
-# Getting Started with Create React App
+<p align="center">
+  <a href="" rel="noopener">
+ <img height=400px src="./map.jpg" alt="Project logo"></a>
+</p>
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+<h1 align="center">Browser Party</h3>
 
-## Available Scripts
+<div align="center">
 
-In the project directory, you can run:
+[![Status](https://img.shields.io/badge/status-active-success.svg)]()
+[![GitHub Issues](https://img.shields.io/github/issues/jefliu123/browser-party.svg)](https://github.com/jefliu123/browser-party/issues)
+[![GitHub Pull Requests](https://img.shields.io/github/issues-pr/jefliu123/browser-party.svg)](https://github.com/jefliu123/browser-party/pulls)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](/LICENSE)
 
-### `npm start`
+</div>
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+---
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+<p align="center"> Browser Party is a free, online, multiplayer board game where players race around the board to collect stars and play fun browser minigames.
+    <br> 
+</p>
 
-### `npm test`
+<h2 align="center">
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+[browserparty.web.app](https://browserparty.web.app/)
 
-### `npm run build`
+</h2>
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## 📝 Table of Contents
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+- [About](#about)
+- [How to Run](#how_to_run)
+- [Deployment](#deployment)
+- [Built Using](#built_using)
+- [Authors](#authors)
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## 🧐 About <a name = "about"></a>
 
-### `npm run eject`
+Browser Party is a multiplayer online game I created using React.js and Firebase. The game is based on Mario Party where players roll a dice each turn and move on the game board while collecting coins and stars along the way. When a player passes a star they can buy it if they have enough coins. At the end of each round of turns, there is a minigame where players play a randomly chosen browser game for coins. The player with the most stars at the end of the game wins.
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+## 🏁 How to Run <a name = "how_to_run"></a>
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+First install all dependencies with
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+```
+npm install
+```
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+then start the server with
 
-## Learn More
+```
+npm start
+```
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+## 🚀 Deployment <a name = "deployment"></a>
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+Current deployment uses Firebase Hosting
 
-### Code Splitting
+First build the project with
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```
+npm run build
+```
 
-### Analyzing the Bundle Size
+then deploy with
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+```
+firebase deploy --only hosting
+```
 
-### Making a Progressive Web App
+## ⛏️ Built Using <a name = "built_using"></a>
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+- [ReactJS](https://reactjs.org/) - Web Framework
+- [Firebase](https://firebase.google.com/) - Backend & Hosting Service
 
-### Advanced Configuration
+## ✍️ Authors <a name = "authors"></a>
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+- [@jefliu123](https://github.com/jefliu123) - Idea & Initial work
 
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+See also the list of [contributors](https://github.com/jefliu123/browser-party/contributors) who participated in this project.

@@ -69,7 +69,7 @@ function ActionSideBar({ game, currentPlayer, gameId }) {
 			.doc(`${gameId}`)
 			.update({
 				"gameData.roll": Math.floor(Math.random() * 6 + 1),
-				// "gameData.roll": 4,
+				// "gameData.roll": 6,
 				"gameData.phase": "rolled",
 			});
 		setDiceAnimated(false);
@@ -283,7 +283,7 @@ function ActionSideBar({ game, currentPlayer, gameId }) {
 			case 42:
 			case 43:
 			case 45:
-				return " got 3 coins";
+				return " got 3 coins.";
 			case 4:
 			case 9:
 			case 13:
@@ -292,18 +292,18 @@ function ActionSideBar({ game, currentPlayer, gameId }) {
 			case 33:
 			case 39:
 			case 44:
-				return " lost 3 coins";
+				return " lost 3 coins.";
 			case 2:
 			case 17:
 			case 29:
 			case 41:
-				return " teleported";
+				return " teleported.";
 			case 6:
 			case 11:
 			case 15:
 			case 26:
 			case 36:
-				return ` are dueling ${game.gameData.stealTarget}`;
+				return ` are dueling ${game.gameData.stealTarget} for 5 coins.`;
 			default:
 		}
 	}
@@ -316,7 +316,7 @@ function ActionSideBar({ game, currentPlayer, gameId }) {
 		) {
 			if (game.gameData.stealCoins === true) {
 				switch (rpsResult(game.gameData.rps1, game.gameData.rps2)) {
-					case "P1WIN":
+					case "You win!":
 						firestore
 							.collection("games")
 							.doc(`${gameId}`)
@@ -329,7 +329,7 @@ function ActionSideBar({ game, currentPlayer, gameId }) {
 								),
 							});
 						break;
-					case "P2WIN":
+					case "You lose.":
 						firestore
 							.collection("games")
 							.doc(`${gameId}`)
@@ -359,7 +359,7 @@ function ActionSideBar({ game, currentPlayer, gameId }) {
 		} else {
 			if (game.gameData.stealCoins === true) {
 				switch (rpsResult(game.gameData.rps1, game.gameData.rps2)) {
-					case "P1WIN":
+					case "You win!":
 						firestore
 							.collection("games")
 							.doc(`${gameId}`)
@@ -372,7 +372,7 @@ function ActionSideBar({ game, currentPlayer, gameId }) {
 								),
 							});
 						break;
-					case "P2WIN":
+					case "You lose.":
 						firestore
 							.collection("games")
 							.doc(`${gameId}`)
@@ -518,33 +518,33 @@ function ActionSideBar({ game, currentPlayer, gameId }) {
 			case "rock":
 				switch (rps2) {
 					case "rock":
-						return "TIE";
+						return "Tie";
 					case "paper":
-						return "P2WIN";
+						return "You lose.";
 					case "scissors":
-						return "P1WIN";
+						return "You win!";
 					default:
 						return "error";
 				}
 			case "paper":
 				switch (rps2) {
 					case "rock":
-						return "P1WIN";
+						return "You win!";
 					case "paper":
-						return "TIE";
+						return "Tie";
 					case "scissors":
-						return "P2WIN";
+						return "You lose.";
 					default:
 						return "error";
 				}
 			case "scissors":
 				switch (rps2) {
 					case "rock":
-						return "P2WIN";
+						return "You lose.";
 					case "paper":
-						return "P1WIN";
+						return "You win!";
 					case "scissors":
-						return "TIE";
+						return "Tie";
 					default:
 						return "error";
 				}
@@ -738,6 +738,13 @@ function ActionSideBar({ game, currentPlayer, gameId }) {
 																{game.gameData.rps1 !== "" &&
 																game.gameData.rps2 !== "" ? (
 																	<div>
+																		<h2>
+																			{currentPlayer}: {game.gameData.rps1}
+																		</h2>
+																		<h2>
+																			{game.gameData.stealTarget}:{" "}
+																			{game.gameData.rps2}
+																		</h2>
 																		<h2>Result:</h2>
 																		<h2>
 																			{rpsResult(
@@ -973,6 +980,13 @@ function ActionSideBar({ game, currentPlayer, gameId }) {
 																{game.gameData.rps1 !== "" &&
 																game.gameData.rps2 !== "" ? (
 																	<div>
+																		<h2>
+																			{currentPlayer}: {game.gameData.rps1}
+																		</h2>
+																		<h2>
+																			{game.gameData.stealTarget}:{" "}
+																			{game.gameData.rps2}
+																		</h2>
 																		<h2>Result:</h2>
 																		<h2>
 																			{rpsResult(
@@ -1085,7 +1099,7 @@ function ActionSideBar({ game, currentPlayer, gameId }) {
 								Round:{" "}
 								{Math.floor(game.gameData.turn / game.playerOrder.length) + 1}{" "}
 							</span>
-							<button onClick={incrementTurn}>Force End Turn</button>
+							{/* <button onClick={incrementTurn}>Force End Turn</button> */}
 						</div>
 					</Grid>
 				</Grid>

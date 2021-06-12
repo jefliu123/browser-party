@@ -133,7 +133,7 @@ function RoomPage({ gameId }) {
 				<div>
 					<p>You are registered as {name}</p>
 					<button onClick={unregister}>Unregister</button>
-					<button onClick={populate}>Test Populate</button>
+					{/* <button onClick={populate}>Test Populate</button> */}
 				</div>
 			)}
 			<h1>Room: {gameId}</h1>
