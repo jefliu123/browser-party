@@ -90,6 +90,47 @@
 	box-shadow: 0 0 0 2px rgb(121, 186, 156), 0 0.25em 0 0 rgb(121, 186, 156);
 }
 
+.lobbyPage {
+	height: 100vh;
+	width: 100vw;
+	background: url(../assets/background_1.png);
+	background-size: contain;
+	animation: scrollpage 600s linear infinite;
+	text-align: center;
+}
+
+.roomPage {
+	height: 100vh;
+	width: 100vw;
+	background-color: #007ced;
+	background: linear-gradient(to bottom, #007ced 1%, #cce7ff 100%);
+}
+
+a:link {
+	color: white;
+	background-color: transparent;
+	text-decoration: none;
+}
+
+a:visited {
+	color: white;
+	background-color: transparent;
+	text-decoration: none;
+}
+
+a:hover {
+	color: white;
+	background-color: transparent;
+	text-decoration: none;
+}
+
+a:active {
+	color: white;
+	background-color: transparent;
+	text-decoration: none;
+}
+
+
 .gamePage {
 	height: 100vh;
 	width: 100vw;

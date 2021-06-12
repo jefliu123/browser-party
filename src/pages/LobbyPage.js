@@ -44,7 +44,7 @@ function LobbyPage() {
 	}
 
 	return (
-		<div>
+		<div className="lobbyPage">
 			<h1>BrowserParty</h1>
 			<button onClick={() => setRedirect("/room/" + generate().dashed)}>
 				New Room

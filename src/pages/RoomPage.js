@@ -5,6 +5,11 @@ import "firebase/database";
 import "firebase/auth";
 import { Redirect } from "react-router-dom";
 
+//material-ui
+import { makeStyles } from "@material-ui/core/styles";
+import Paper from "@material-ui/core/Paper";
+
+
 //context
 import { PlayerContext } from "../context/player";
 
@@ -26,7 +31,37 @@ if (!firebase.apps.length) {
 
 const firestore = firebase.firestore();
 
+const useStyles = makeStyles((theme) => ({
+	playeridBox: {	
+		fontFamily: "cursive",
+		textAlign: "right",
+		position: "fixed",
+		top: "1em",
+		right: "1em",
+	},
+	container: {
+		textAlign: "center",
+		paddingTop: "10vh",
+	},
+	minigameBox: {
+		fontFamily: "cursive",
+		outline: 0,
+		padding: 20,
+		textAlign: "center",
+		minHeight: "70vh",
+		maxHeight: "90vh",
+		maxWidth: "30vw",
+		marginLeft: "auto",
+		marginRight: "auto",
+	},
+	inputBox: {
+		padding: "10px",
+	},
+}));
+
 function RoomPage({ gameId }) {
+	const classes = useStyles();
+
 	const { name, isRegistered, registerPlayer, unregisterPlayer } = useContext(
 		PlayerContext
 	);
@@ -128,70 +163,75 @@ function RoomPage({ gameId }) {
 	const link = "browserparty.web.app/room/" + gameId;
 
 	return (
-		<div>
-			{isRegistered && (
-				<div>
-					<p>You are registered as {name}</p>
-					<button onClick={unregister}>Unregister</button>
-					{/* <button onClick={populate}>Test Populate</button> */}
-				</div>
-			)}
-			<h1>Room: {gameId}</h1>
-			{game &&
-				(game.status === "waiting" ? (
-					<div>
-						<p>
-							Share this link with your friends to invite them:{" "}
-							<a href={link}>{link}</a>
-						</p>
-						<p>Room Type: {game.type}</p>
-						<p>Status: {game.status}</p>
-						<div>
-							{players.map((player, index) => (
-								<div key={index}>
-									{player !== name ? (
-										<p>
-											Player {index + 1}: {player}
-										</p>
-									) : (
-										<p>
-											Player {index + 1}: {player} (you)
-										</p>
+		<div className="roomPage">
+			<div id="cloud-intro">
+				{isRegistered && (
+					<div className={classes.playeridBox}>
+						<p>You are registered as {name}</p>
+						<button onClick={unregister}>Unregister</button>
+						{/* <button onClick={populate}>Test Populate</button> */}
+					</div>
+				)}
+				{game &&
+					(game.status === "waiting" ? (
+						<div className={classes.container}>
+							<Paper className={classes.minigameBox}>
+								<h2> Invite Link: </h2>
+								<a href={link}>{link}</a>
+								<h1>Players</h1>
+								{isRegistered && (
+									<p>(unregister in the top right if your name isn't here)</p>
+								)}
+								<div>
+									{players.map((player, index) => (
+										<div key={index}>
+											{player !== name ? (
+												<p>
+													Player {index + 1}: {player}
+												</p>
+											) : (
+												<p>
+													Player {index + 1}: {player} (you)
+												</p>
+											)}
+										</div>
+									))}
+								</div>
+								<div>
+									{!isRegistered && (
+										<form onSubmit={joinRoom}>
+											<label>
+												Join as: {" "}
+												<input
+													type="text"
+													value={value}
+													onChange={(e) => setValue(e.target.value)}
+													className={classes.inputBox}
+												/>
+											</label>
+											{/* <input type="submit" value="Enter" /> */}
+										</form>
 									)}
 								</div>
-							))}
+								
+								<div>
+									{players.length > 0 && <button onClick={startGame}>Start</button>}
+								</div>
+							</Paper>
 						</div>
-						<div>
-							{!isRegistered && (
-								<form onSubmit={joinRoom}>
-									<label>
-										Join as:
-										<input
-											type="text"
-											value={value}
-											onChange={(e) => setValue(e.target.value)}
-										/>
-									</label>
-									<input type="submit" value="Enter" />
-								</form>
-							)}
+					) : (
+						<div className={classes.container}>
+							<h1>Game in Progress</h1>
+							<button
+								onClick={() => {
+									setRedirect(`/game/${gameId}`);
+								}}
+							>
+								Go to Game
+							</button>
 						</div>
-						<div>
-							{players.length > 0 && <button onClick={startGame}>Start</button>}
-						</div>
-					</div>
-				) : (
-					<div>
-						<p>Already in game...</p>
-						<button
-							onClick={() => {
-								setRedirect(`/game/${gameId}`);
-							}}
-						>
-							Go to Game
-						</button>
-					</div>
-				))}
+					))}
+			</div>
 		</div>
 	);
 }
